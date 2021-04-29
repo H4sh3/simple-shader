@@ -5,23 +5,28 @@ function initState(res) {
         config: {
             resolution: res
         },
-        pixelmap: [],
+        pixelMap: [],
         pixelSize: width / res,
-        positions: getCheckpoints(),
+        positions: initCheckpoints(),
         positionsIndex: 0,
         spotlight: createVector(width / 2, height / 2)
     }
+    s.pixelmap = initPixelMap()
+}
 
+function initPixelMap() {
+    const tmp = []
     for (let y = 0; y < width / s.pixelSize; y++) {
         const row = []
         for (let x = 0; x < width / s.pixelSize; x++) {
             row.push(255)
         }
-        s.pixelmap.push(row)
+        tmp.push(row)
     }
+    return tmp
 }
 
-function getCheckpoints() {
+function initCheckpoints() {
     const tmp = [];
     for (let i = 0; i < 10; i++) {
         tmp.push(createVector(random(25, width - 25), random(25, width - 25)))
@@ -38,9 +43,14 @@ function setup() {
 
 function draw() {
     background(0)
-    renderPixels()
-    updatePixels2()
+    render()
+    update()
+
+}
+
+function update() {
     updatePositions()
+    updateHue()
 }
 
 function updatePositions() {
@@ -49,11 +59,11 @@ function updatePositions() {
         const mv = currTarget.sub(s.spotlight)
         s.spotlight.add(mv.normalize().mult(5))
     } else {
-        s.positionsIndex = s.positionsIndex >= s.positions.length -1 ? 0 : s.positionsIndex + 1
+        s.positionsIndex = s.positionsIndex >= s.positions.length - 1 ? 0 : s.positionsIndex + 1
     }
 }
 
-function updatePixels2() {
+function updateHue() {
     mx = s.spotlight.x
     my = s.spotlight.y
     for (let y = 0; y < s.pixelmap.length; y++) {
@@ -64,7 +74,7 @@ function updatePixels2() {
     }
 }
 
-function renderPixels() {
+function render() {
     s.pixelmap.forEach((row, xpos) => {
         row.forEach((pixel, ypos) => {
             fill(52, 194, 3, pixel)
